@@ -1,3 +1,5 @@
+ifneq (,$(findstring arti,$(VISION_LIBRARIES)))
+
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 LOCAL_MODULE_TAGS := optional
@@ -8,3 +10,5 @@ LOCAL_REQUIRED_MODULES := libarcamera_jni
 include $(BUILD_PACKAGE)
 
 include $(call all-makefiles-under, $(LOCAL_PATH))
+
+endif
