@@ -239,6 +239,11 @@ arxstatus_t ImageBuffer::free()
         anativewindow_release(mAnw, &(mImage.reserved));
     } else {
         DVP_Image_Free(mDvp, &mImage);
+        if (mImage.memType != DVP_MTYPE_MPUCACHED_VIRTUAL_SHARED) {
+            for (uint32_t i = 0; i < mImage.planes; i++) {
+                close(mSharedFds[i]);
+            }
+        }
     }
     return NOERROR;
 }

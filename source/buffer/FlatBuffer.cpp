@@ -84,6 +84,9 @@ arxstatus_t FlatBuffer::free()
         }
     } else {
         DVP_Buffer_Free(mDvp, &mBuffer);
+        if (mBuffer.memType != DVP_MTYPE_MPUCACHED_VIRTUAL_SHARED) {
+            close(mSharedFd);
+        }
     }
     return NOERROR;
 }
