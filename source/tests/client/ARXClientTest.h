@@ -103,6 +103,7 @@ private:
     bool_e mEnableFP;
     bool_e mEnableFPFilter;
     bool_e mLogFP;
+    int32_t mConfThresh;
     int32_t mMinMove;
     int32_t mMaxMove;
 };

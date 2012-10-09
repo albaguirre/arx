@@ -188,6 +188,7 @@ ARXMainClientTest::ARXMainClientTest()
     mEnableFP = false_e;
     mLogFP = false_e;
     mEnableFPFilter = false_e;
+    mConfThresh = 200;
     mMinMove = 0;
     mMaxMove = 0xFFFF;
 
@@ -260,6 +261,7 @@ arxstatus_t ARXMainClientTest::init()
     if (mEnableFP) {
         ret = mFPRend->init(mCamWidth, mCamHeight, 0, 0, mArx, BUFF_FACEINFO, mLogFP);
         mArx->setProperty(PROP_ENGINE_FPD_FILTER, mEnableFPFilter ? 1 : 0);
+        mArx->setProperty(PROP_ENGINE_FPD_CONFTHRESH, mConfThresh);
         mArx->setProperty(PROP_ENGINE_FPD_MINMOVE, mMinMove);
         mArx->setProperty(PROP_ENGINE_FPD_MAXMOVE, mMaxMove);
     }
@@ -274,7 +276,7 @@ arxstatus_t ARXMainClientTest::parseOptions(int argc, char *argv[])
         return ret;
     }
 
-    int numOptions = 10;
+    int numOptions = 11;
     option_t *opts = (option_t *)calloc(numOptions, sizeof(option_t));
     if (opts == NULL) {
         return NOMEMORY;
@@ -303,13 +305,18 @@ arxstatus_t ARXMainClientTest::parseOptions(int argc, char *argv[])
 
     opts[index].datum = &mEnableFP;
     opts[index++].short_switch = "-rp";
-    
+
     opts[index].datum = &mLogFP;
     opts[index++].short_switch = "-wp";
 
     opts[index].datum = &mEnableFPFilter;
     opts[index++].short_switch = "-fpdf";
-    
+
+    opts[index].datum = &mConfThresh;
+    opts[index].type = OPTION_TYPE_INT;
+    opts[index].size = sizeof(int);
+    opts[index++].short_switch = "-conf";
+
     opts[index].datum = &mMinMove;
     opts[index].type = OPTION_TYPE_INT;
     opts[index].size = sizeof(int);
@@ -324,13 +331,14 @@ arxstatus_t ARXMainClientTest::parseOptions(int argc, char *argv[])
 
     free(opts);
 
-    ARX_PRINT(ARX_ZONE_ALWAYS, "FD:%d, FDSync:%d, Sobel:%d, Harris:%d, Gradient:%d, Facial Parts:%d, Min Move:%d, Max Move:%d",
+    ARX_PRINT(ARX_ZONE_ALWAYS, "FD:%d, FDSync:%d, Sobel:%d, Harris:%d, Gradient:%d, Facial Parts:%d, Confidence Threshold:%d, Min Move:%d, Max Move:%d",
             mEnableFD,
             mEnableFDSync,
             mEnableSobel,
             mEnableHarris,
             mEnableGrad,
             mEnableFP,
+            mConfThresh,
             mMinMove,
             mMaxMove);
     return NOERROR;

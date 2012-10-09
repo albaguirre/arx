@@ -43,8 +43,7 @@ public:
     arxstatus_t getProperty(uint32_t property, int32_t *value);
 
 private:
-    bool didCoordMove(ARXCoords &oldCoord, POINT &newCoord) const; 
-
+    bool didCoordMove(ARXCoords &oldCoord, POINT &newCoord) const;
     HDETECTION mHdlFaceDet;
     HDTRESULT mHdlFaceDetRes;
     HPOINTER mHdlFacePart;
@@ -61,6 +60,14 @@ private:
 
     ARXFacialPartsInfo mCurFpInfo;
     bool mFilterFacePose;
+    bool mThreshPassLE;
+    bool mThreshPassRE;
+    bool mThreshPassLN;
+    bool mThreshPassRN;
+    bool mThreshPassLM;
+    bool mThreshPassRM;
+    bool mThreshPassUM;
+    int32_t mConfThresh;
     int32_t mMinMove;
     int32_t mMaxMove;
     bool mFDInit;

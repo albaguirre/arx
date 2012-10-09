@@ -32,13 +32,21 @@ FacePose::FacePose()
     mHdlFaceDetRes = NULL;
     mHdlFacePart = NULL;
     mHdlFacePartRes = NULL;
-
     mTmpImage = NULL;
     mBackupMem = NULL;
     mWorkMem = NULL;
 
     mInitialized = false;
     mMirroring = VCAM_MIRROR_NONE;
+
+    mThreshPassLE = false_e;
+    mThreshPassRE = false_e;
+    mThreshPassLN = false_e;
+    mThreshPassRN = false_e;
+    mThreshPassLM = false_e;
+    mThreshPassRM = false_e;
+    mThreshPassUM = false_e;
+    mConfThresh = 200;
     mFilterFacePose = false_e;
     mMinMove = 0;
     mMaxMove = 0xFFFF;
@@ -254,6 +262,14 @@ arxstatus_t FacePose::process(ImageBuffer *previewBuf, ImageBuffer *buf, ARXFaci
     bool rmChange = true;
     bool cmChange = true;
     for (int i = 0; i < numFaces; i++) {
+        mThreshPassLE = false_e;
+        mThreshPassRE = false_e;
+        mThreshPassLN = false_e;
+        mThreshPassRN = false_e;
+        mThreshPassLM = false_e;
+        mThreshPassRM = false_e;
+        mThreshPassUM = false_e;
+
 #if defined(USE_OMRON_SWFD)
         ret = OKAO_PT_SetPositionFromHandle(mHdlFacePart, mHdlFaceDetRes, i);
         if (ret != OKAO_NORMAL) {
@@ -326,42 +342,94 @@ arxstatus_t FacePose::process(ImageBuffer *previewBuf, ImageBuffer *buf, ARXFaci
 
         // When filtering, treat the left and right eyes as connected. In other words,
         // only update the coordinates if all of the eye coordinates have changed values.
-        if (!mFilterFacePose || (leiChange && reiChange && leoChange && reoChange) ) {
-            mCurFpInfo.faces[i].lefteyeout.x = aptPoint[PT_POINT_LEFT_EYE_OUT].x;
-            mCurFpInfo.faces[i].lefteyeout.y = aptPoint[PT_POINT_LEFT_EYE_OUT].y;
-            mCurFpInfo.faces[i].lefteyein.x = aptPoint[PT_POINT_LEFT_EYE_IN].x;
-            mCurFpInfo.faces[i].lefteyein.y = aptPoint[PT_POINT_LEFT_EYE_IN].y;
-            mCurFpInfo.faces[i].righteyeout.x = aptPoint[PT_POINT_RIGHT_EYE_OUT].x;
-            mCurFpInfo.faces[i].righteyeout.y = aptPoint[PT_POINT_RIGHT_EYE_OUT].y;
-            mCurFpInfo.faces[i].righteyein.x = aptPoint[PT_POINT_RIGHT_EYE_IN].x;
-            mCurFpInfo.faces[i].righteyein.y = aptPoint[PT_POINT_RIGHT_EYE_IN].y;
+        if (!mFilterFacePose || (leiChange && reiChange && leoChange && reoChange)) {
+            if (anConf[PT_POINT_LEFT_EYE_OUT] > mConfThresh) {
+                mCurFpInfo.faces[i].lefteyeout.x = aptPoint[PT_POINT_LEFT_EYE_OUT].x;
+                mCurFpInfo.faces[i].lefteyeout.y = aptPoint[PT_POINT_LEFT_EYE_OUT].y;
+                out->faces[i].lefteyeout.x = mCurFpInfo.faces[i].lefteyeout.x;
+                out->faces[i].lefteyeout.y = mCurFpInfo.faces[i].lefteyeout.y;
+                mThreshPassLE = true_e;
+            }
+            if (anConf[PT_POINT_LEFT_EYE_IN] > mConfThresh) {
+                mCurFpInfo.faces[i].lefteyein.x = aptPoint[PT_POINT_LEFT_EYE_IN].x;
+                mCurFpInfo.faces[i].lefteyein.y = aptPoint[PT_POINT_LEFT_EYE_IN].y;
+                out->faces[i].lefteyein.x = mCurFpInfo.faces[i].lefteyein.x;
+                out->faces[i].lefteyein.y = mCurFpInfo.faces[i].lefteyein.y;
+                mThreshPassLE = true_e;
+            }
+            if (anConf[PT_POINT_RIGHT_EYE_OUT] > mConfThresh) {
+                mCurFpInfo.faces[i].righteyeout.x = aptPoint[PT_POINT_RIGHT_EYE_OUT].x;
+                mCurFpInfo.faces[i].righteyeout.y = aptPoint[PT_POINT_RIGHT_EYE_OUT].y;
+                out->faces[i].righteyeout.x = mCurFpInfo.faces[i].righteyeout.x;
+                out->faces[i].righteyeout.y = mCurFpInfo.faces[i].righteyeout.y;
+                mThreshPassRE = true_e;
+            }
+            if (anConf[PT_POINT_RIGHT_EYE_IN] > mConfThresh) {
+                mCurFpInfo.faces[i].righteyein.x = aptPoint[PT_POINT_RIGHT_EYE_IN].x;
+                mCurFpInfo.faces[i].righteyein.y = aptPoint[PT_POINT_RIGHT_EYE_IN].y;
+                out->faces[i].righteyein.x = mCurFpInfo.faces[i].righteyein.x;
+                out->faces[i].righteyein.y = mCurFpInfo.faces[i].righteyein.y;
+                mThreshPassRE = true_e;
+            }
 
             mCurFpInfo.faces[i].roll = roll;
             mCurFpInfo.faces[i].pitch = pitch;
             mCurFpInfo.faces[i].yaw = yaw;
+            out->faces[i].roll = mCurFpInfo.faces[i].roll;
+            out->faces[i].pitch = mCurFpInfo.faces[i].pitch;
+            out->faces[i].yaw = mCurFpInfo.faces[i].yaw;
         }
 
-        if (!mFilterFacePose || (lnChange && rnChange) ) {
-            mCurFpInfo.faces[i].leftnose.x = aptPoint[PT_POINT_NOSE_LEFT].x;
-            mCurFpInfo.faces[i].leftnose.y = aptPoint[PT_POINT_NOSE_LEFT].y;
-            mCurFpInfo.faces[i].rightnose.x = aptPoint[PT_POINT_NOSE_RIGHT].x;
-            mCurFpInfo.faces[i].rightnose.y = aptPoint[PT_POINT_NOSE_RIGHT].y;
+        if (!mFilterFacePose || (lnChange && rnChange)) {
+            if (anConf[PT_POINT_NOSE_LEFT] > mConfThresh) {
+                mCurFpInfo.faces[i].leftnose.x = aptPoint[PT_POINT_NOSE_LEFT].x;
+                mCurFpInfo.faces[i].leftnose.y = aptPoint[PT_POINT_NOSE_LEFT].y;
+                out->faces[i].leftnose.x = mCurFpInfo.faces[i].leftnose.x;
+                out->faces[i].leftnose.y = mCurFpInfo.faces[i].leftnose.y;
+                mThreshPassLN = true_e;
+            }
+            if (anConf[PT_POINT_NOSE_RIGHT] > mConfThresh) {
+                mCurFpInfo.faces[i].rightnose.x = aptPoint[PT_POINT_NOSE_RIGHT].x;
+                mCurFpInfo.faces[i].rightnose.y = aptPoint[PT_POINT_NOSE_RIGHT].y;
+                out->faces[i].rightnose.x = mCurFpInfo.faces[i].rightnose.x;
+                out->faces[i].rightnose.y = mCurFpInfo.faces[i].rightnose.y;
+                mThreshPassRN = true_e;
+            }
         }
 
         // When filtering, treat the nose and mouth as connected. In other words,
         // only update the coordinates if all of the nose and mouth coordinates have
         // changed values.
         if (!mFilterFacePose || (lmChange && rmChange && cmChange)) {
-            mCurFpInfo.faces[i].leftmouth.x = aptPoint[PT_POINT_MOUTH_LEFT].x;
-            mCurFpInfo.faces[i].leftmouth.y = aptPoint[PT_POINT_MOUTH_LEFT].y;
-            mCurFpInfo.faces[i].rightmouth.x = aptPoint[PT_POINT_MOUTH_RIGHT].x;
-            mCurFpInfo.faces[i].rightmouth.y = aptPoint[PT_POINT_MOUTH_RIGHT].y;
-            mCurFpInfo.faces[i].centertopmouth.x = aptPoint[PT_POINT_MOUTH_UP].x;
-            mCurFpInfo.faces[i].centertopmouth.y = aptPoint[PT_POINT_MOUTH_UP].y;
+            if (anConf[PT_POINT_MOUTH_LEFT] > mConfThresh) {
+                mCurFpInfo.faces[i].leftmouth.x = aptPoint[PT_POINT_MOUTH_LEFT].x;
+                mCurFpInfo.faces[i].leftmouth.y = aptPoint[PT_POINT_MOUTH_LEFT].y;
+                out->faces[i].leftmouth.x = mCurFpInfo.faces[i].leftmouth.x;
+                out->faces[i].leftmouth.y = mCurFpInfo.faces[i].leftmouth.y;
+                mThreshPassLM = true_e;
+            }
+            if (anConf[PT_POINT_MOUTH_RIGHT] > mConfThresh) {
+                mCurFpInfo.faces[i].rightmouth.x = aptPoint[PT_POINT_MOUTH_RIGHT].x;
+                mCurFpInfo.faces[i].rightmouth.y = aptPoint[PT_POINT_MOUTH_RIGHT].y;
+                out->faces[i].rightmouth.x = mCurFpInfo.faces[i].rightmouth.x;
+                out->faces[i].rightmouth.y = mCurFpInfo.faces[i].rightmouth.y;
+                mThreshPassRM = true_e;
+            }
+            if (anConf[PT_POINT_MOUTH_UP] > mConfThresh) {
+                mCurFpInfo.faces[i].centertopmouth.x = aptPoint[PT_POINT_MOUTH_UP].x;
+                mCurFpInfo.faces[i].centertopmouth.y = aptPoint[PT_POINT_MOUTH_UP].y;
+                out->faces[i].centertopmouth.x = mCurFpInfo.faces[i].centertopmouth.x;
+                out->faces[i].centertopmouth.y = mCurFpInfo.faces[i].centertopmouth.y;
+                mThreshPassUM = true_e;
+            }
         }
 
-        memcpy(&out->faces[i], &mCurFpInfo.faces[i], sizeof(ARXFacialParts));
+        if (!mThreshPassLE || !mThreshPassRE) {
+            out->numFaces = 0;
+            break;
+        }
     }
+
     if (numFaces > 0)
         mFDInit = true;
 
@@ -371,7 +439,7 @@ arxstatus_t FacePose::process(ImageBuffer *previewBuf, ImageBuffer *buf, ARXFaci
     return NOERROR;
 }
 
-bool FacePose::didCoordMove(ARXCoords &oldCoord, POINT &newCoord) const 
+bool FacePose::didCoordMove(ARXCoords &oldCoord, POINT &newCoord) const
 {
     int xdiff = abs(oldCoord.x - newCoord.x);
     int ydiff = abs(oldCoord.y - newCoord.y);
@@ -392,7 +460,7 @@ arxstatus_t FacePose::setProperty(uint32_t property, int32_t value)
             if (value < 0 || value > mMaxMove) {
                 ARX_PRINT(ARX_ZONE_ERROR, "Invalid min move value of %d (must be less than or equal to max move of %d)", value, mMaxMove);
                 return INVALID_VALUE;
-            } 
+            }
             mMinMove = value;
             break;
         }
@@ -401,8 +469,17 @@ arxstatus_t FacePose::setProperty(uint32_t property, int32_t value)
             if (value < 0 || value < mMinMove) {
                 ARX_PRINT(ARX_ZONE_ERROR, "Invalid max move value of %d (must be greater than or equal to min move of %d)", value, mMinMove);
                 return INVALID_VALUE;
-            } 
+            }
             mMaxMove = value;
+            break;
+        }
+        case PROP_ENGINE_FPD_CONFTHRESH:
+        {
+            if (value < 0 || value > 999) {
+                ARX_PRINT(ARX_ZONE_ERROR, "Invalid confidence value of %d (must be greater than 0 and less than 1000)", value);
+                return INVALID_VALUE;
+            }
+            mConfThresh = value;
             break;
         }
         default:
@@ -429,6 +506,11 @@ arxstatus_t FacePose::getProperty(uint32_t property, int32_t *value)
         case PROP_ENGINE_FPD_MAXMOVE:
         {
             *value = (int32_t)mMaxMove;
+            break;
+        }
+        case PROP_ENGINE_FPD_CONFTHRESH:
+        {
+            *value = (int32_t)mConfThresh;
             break;
         }
         default:

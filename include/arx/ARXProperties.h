@@ -43,7 +43,7 @@ enum Properties_e {
     /*!
      * Property to configure/query the mirroring type used for the camera secondary output
      * This property only takes effect during a PROP_ENGINE_STATE change to ENGINE_STATE_START.
-	 * NOTE: Face detect locations are always calculated with no mirroring
+     * NOTE: Face detect locations are always calculated with no mirroring
      * @see CamMirrorType_e
      */
     PROP_CAM_SEC_MIRROR,
@@ -58,8 +58,13 @@ enum Properties_e {
 
     PROP_ENGINE_FPD_FILTER,
     PROP_ENGINE_FPD_MINMOVE,
-    PROP_ENGINE_FPD_MAXMOVE
-
+    PROP_ENGINE_FPD_MAXMOVE,
+    /*!
+     * Property to set the confidence level threshold (range: [1 - 1000], where 1000 is the highest
+     * confidence).  FPD only returns results when the confidence of all FPD features are higher
+     * than the threshold.  The default threshold value is 1.
+     */
+    PROP_ENGINE_FPD_CONFTHRESH,
 };
 
 /** @see Properties_e */
