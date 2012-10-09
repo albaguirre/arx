@@ -56,7 +56,7 @@ void ARXImpl::destroy()
         mgr->freeBuffers();
     }
 
-    for (size_t i = 0; i < mFlatBufMgrMap.size(); i++) {
+    for (size_t i = 0; i < mImgBufMgrMap.size(); i++) {
         const sp<ARXImageBufferMgrImpl>& mgr = mImgBufMgrMap.valueAt(i);
         mgr->freeBuffers();
     }
