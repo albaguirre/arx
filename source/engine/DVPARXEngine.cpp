@@ -40,9 +40,9 @@ ARXEngine *ARXEngineFactory()
 DVPARXEngine::DVPARXEngine() : ARXEngine()
 {
     ARX_PRINT(ARX_ZONE_API, "%s\n", __FUNCTION__);
-    
+
     m_focus = VCAM_FOCUS_CONTROL_HYPERFOCAL;
-    
+
     sp<ImageBufferMgr> sobelMgr = new ImageBufferMgr(BUFF_SOBEL_3X3, 320, 240, FOURCC_Y800);
     mImgBuffMgrMap.add(BUFF_SOBEL_3X3, sobelMgr);
 
@@ -133,7 +133,7 @@ arxstatus_t DVPARXEngine::Setup()
     if (!AllocateNodes(4) || !AllocateSections(&m_graphs[0], 3)) {
         return NOMEMORY;
     }
-    
+
 #if defined(DVP_USE_VLIB)
     if (harrisScore->enabled()) {
         mHarrisScratch = reinterpret_cast<DVP_Buffer_t *>(calloc(1, sizeof(DVP_Buffer_t)));
@@ -149,7 +149,7 @@ arxstatus_t DVPARXEngine::Setup()
 
     uint32_t section = 0;
     uint32_t node = 0;
-    
+
    if (sobelMgr->enabled()) {
         m_pNodes[node].header.kernel = DVP_KN_SOBEL_3x3_8;
         m_graphs[0].sections[section].pNodes = &m_pNodes[node];
