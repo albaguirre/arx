@@ -83,6 +83,5 @@ int main(int argc, char *argv[])
     arxTest->waitToComplete();
     ARX_PRINT(ARX_ZONE_ALWAYS, "Finished.\n");
 
-    printf("Hello ARX test!");
     return 0;
 }
