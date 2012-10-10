@@ -229,6 +229,8 @@ void ARXEngine::Teardown()
         FreeGraphs();
     }
 
+    FreeImageStructs();
+
     DVP_KernelGraph_Deinit(m_hDVP);
     m_hDVP = 0;
     Unlock();
