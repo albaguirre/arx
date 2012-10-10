@@ -48,6 +48,7 @@ ImageBufferMgr::ImageBufferMgr(
     }
     mHoldReadyForClient = false;
     mUsingTexture = false;
+    mCam = NULL;
 }
 
 ImageBufferMgr::~ImageBufferMgr()

@@ -356,6 +356,7 @@ public:
 
 ARXCamPoseTest::ARXCamPoseTest()
 {
+    mCamPoseL = NULL;
 }
 
 ARXCamPoseTest::~ARXCamPoseTest()

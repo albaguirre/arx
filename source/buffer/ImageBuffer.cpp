@@ -83,6 +83,7 @@ void ImageBuffer::init()
     }
     mCam = NULL;
     mCamFrame = NULL;
+    mPendingRender = false;
 }
 
 arxstatus_t ImageBuffer::readyOnMatch(VisionCamFrame *camFrame)

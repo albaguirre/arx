@@ -36,10 +36,13 @@ FacePose::FacePose()
     mTmpImage = NULL;
     mBackupMem = NULL;
     mWorkMem = NULL;
-    
+
+    mInitialized = false;
+    mMirroring = VCAM_MIRROR_NONE;
     mFilterFacePose = false_e;
     mMinMove = 0;
     mMaxMove = 0xFFFF;
+    mFDInit = false;
 }
 
 FacePose::~FacePose()

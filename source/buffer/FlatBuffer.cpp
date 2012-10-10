@@ -43,6 +43,7 @@ FlatBuffer::FlatBuffer() :
     DVP_Buffer_Init(&mBuffer, 1, 0);
     mSharedFd = 0;
     mImportHdl = 0;
+    mSize = 0;
 }
 
 FlatBuffer::~FlatBuffer()

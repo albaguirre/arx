@@ -28,6 +28,7 @@ namespace tiarx {
 
 ARXDaemon::ARXDaemon() :
         mState(ENGINE_STATE_STOP),
+        mModule(NULL),
         mFactory(NULL),
         mEngine(NULL)
 {
