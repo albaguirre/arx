@@ -64,14 +64,6 @@ private:
     DVP_Image_t mImages[6];
     DVP_Buffer_t mBuffers[4];
 
-    unsigned int mHarrisThreshold;
-    short mHarrisSensitivity;
-    short mNonmaxWindowSize;
-    int mFeatureMatchRadius;
-    float mFeatureMatchInlierRatio1;
-    float mFeatureMatchInlierRatio2;
-    int mFeaturesMinimum;
-    int mExtendWorkspace;
 };
 
 
