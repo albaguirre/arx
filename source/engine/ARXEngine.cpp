@@ -363,6 +363,7 @@ status_e ARXEngine::Engine()
 void ARXEngine::ReceiveImage(VisionCamFrame *camFrame)
 {
     if (camFrame && m_running) {
+        Lock();
         if (camFrame->mFrameSource == VCAM_PORT_PREVIEW) {
             static int64_t prevTime = 0;
             ARX_PRINT(ARX_ZONE_ENGINE, "preview rate:"FMT_INT64_T"\n", camFrame->mTimestamp-prevTime);
@@ -373,6 +374,7 @@ void ARXEngine::ReceiveImage(VisionCamFrame *camFrame)
             const sp<ImageBufferMgr>& mgr = mImgBuffMgrMap.valueFor(BUFF_CAMOUT2);
             mgr->readyOnMatch(camFrame);
         }
+        Unlock();
     }
 }
 
