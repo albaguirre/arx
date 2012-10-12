@@ -58,6 +58,9 @@ else
 # This chooses ERROR, WARNING
 ARX_DEBUGGING := -DARX_DEBUG=1 -DARX_ZONE_MASK=0x0003
 endif
+ifdef ARX_VALGRIND_DEBUG
+ARX_DEBUGGING += -DARX_VALGRIND_DEBUG
+endif
 
 include $(call all-makefiles-under, $(ARX_TOP)/source)
 
