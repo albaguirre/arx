@@ -38,6 +38,7 @@ ARXDaemon::ARXDaemon() :
 ARXDaemon::~ARXDaemon()
 {
     disconnect();
+    mutex_deinit(&mLock);
 }
 
 void ARXDaemon::binderDied(const wp<IBinder>&)
