@@ -129,11 +129,14 @@ arxstatus_t ImageBuffer::copyInfo(DVP_Image_t *image)
     return NOERROR;
 }
 
-arxstatus_t ImageBuffer::copyInfo(DVP_Image_t *image, uint32_t format)
+arxstatus_t ImageBuffer::copyInfo(DVP_Image_t *pImage, uint32_t format)
 {
     ARX_PRINT(ARX_ZONE_API, "%s\n", __FUNCTION__);
-    *image = mImage;
-    image->color = format;
+    DVP_Image_Dup(pImage, &mImage);
+    pImage->color = format;
+    if (format == FOURCC_Y800) {
+        pImage->planes = 1;
+    }
     return NOERROR;
 }
 
