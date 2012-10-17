@@ -196,6 +196,10 @@ arxstatus_t DVPARXEngine::Process(ImageBuffer *previewBuf, ImageBuffer *videoBuf
 {
     uint32_t node = 0;
 
+    if (videoBuf == NULL) {
+        return NULL_POINTER;
+    }
+
     const sp<ImageBufferMgr>& sobelMgr = mImgBuffMgrMap.valueFor(BUFF_SOBEL_3X3);
     if (sobelMgr->enabled()) {
         ImageBuffer *sobelBuf = sobelMgr->nextFree();
