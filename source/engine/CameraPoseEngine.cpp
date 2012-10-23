@@ -221,6 +221,7 @@ arxstatus_t CameraPoseEngine::Setup()
     };
     DVP_Image_Fill(&mImages[5], (DVP_S08 *)gaussianFilter_7x7, sizeof(gaussianFilter_7x7));
 
+#if defined(DVP_USE_IMGLIB)
     if (mEnableGausFilter) {
         m_pNodes[nodeIdx].header.kernel = DVP_KN_IMG_CONV_7x7_I8_C16;
     } else {
@@ -233,6 +234,10 @@ arxstatus_t CameraPoseEngine::Setup()
     pConv->scratch = mBuffers[3];
     m_pNodes[nodeIdx].header.affinity = DVP_CORE_DSP;
     nodeIdx++;
+#else
+    m_pNodes[nodeIdx].header.kernel = DVP_KN_NOOP;
+    nodeIdx++;
+#endif
 
     m_pNodes[nodeIdx].header.kernel = DVP_KN_VLIB_CANNY_2D_GRADIENT;
     DVP_Canny2dGradient_t* p2DGrad = dvp_knode_to(&m_pNodes[nodeIdx], DVP_Canny2dGradient_t);
@@ -319,10 +324,14 @@ arxstatus_t CameraPoseEngine::Process(ImageBuffer *, ImageBuffer *videoBuf)
             if (!mEnableGausFilter) {
                 DVP_Canny2dGradient_t *t = dvp_knode_to(&m_pNodes[1], DVP_Canny2dGradient_t);
                 videoBuf->copyInfo(&t->input, FOURCC_Y800);
-            } else {
+            }
+#if defined(DVP_USE_IMGLIB)
+            else {
+
                 DVP_ImageConvolution_with_buffer_t *t = dvp_knode_to(&m_pNodes[0], DVP_ImageConvolution_with_buffer_t);
                 videoBuf->copyInfo(&t->input, FOURCC_Y800);
             }
+#endif
             if (GraphExecute(&m_graphs[0])) {
                 DVP_PrintPerformanceGraph(m_hDVP, &m_graphs[0]);
                 int numFeatures = *((short *)mBuffers[2].pData);
