@@ -19,6 +19,11 @@ LOCAL_CPPFLAGS := $(ARX_DEBUGGING) $(ARX_CPPFLAGS) $(DVP_FEATURES)
 LOCAL_SRC_FILES := IBufferMgrClient.cpp IFlatBufferMgr.cpp IImageBufferMgr.cpp BufferMgr.cpp \
                    FlatBufferMgr.cpp ImageBufferMgr.cpp Buffer.cpp FlatBuffer.cpp ImageBuffer.cpp
 LOCAL_C_INCLUDES := $(ARX_INC) $(DVP_INC)
-LOCAL_SHARED_LIBRARIES := libdvp libbinder libutils libcutils libgui libui libion libhardware
+LOCAL_SHARED_LIBRARIES := libdvp libbinder libutils libcutils libgui libui libhardware
+ifeq ($(TARGET_ANDROID_VERSION),JELLYBEANMR1)
+    LOCAL_SHARED_LIBRARIES += libion_ti
+else
+    LOCAL_SHARED_LIBRARIES += libion
+endif
 LOCAL_MODULE := libarxbuf
 include $(BUILD_SHARED_LIBRARY)

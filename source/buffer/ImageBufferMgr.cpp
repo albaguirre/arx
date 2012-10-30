@@ -18,7 +18,7 @@
 #include <buffer/ImageBufferMgr.h>
 #include <arx_debug.h>
 
-#if defined(JELLYBEAN)
+#if defined(JELLYBEAN) || defined(JELLYBEANMR1)
 #include <gui/ISurface.h>
 #include <gui/Surface.h>
 #else

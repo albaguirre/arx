@@ -58,7 +58,11 @@ arxstatus_t DisplaySurface::init(bool localRender)
         return NOMEMORY;
     }
 
+#if defined(JELLYBEANMR1)
+    mControl = mClient->createSurface(String8("ARXSurface"), mWidth, mHeight, mFormat);
+#else
     mControl = mClient->createSurface(0, mWidth, mHeight, mFormat);
+#endif
     if (mControl == NULL) {
         ARX_PRINT(ARX_ZONE_ERROR, "Failed to create surface!\n");
         return NOMEMORY;
@@ -108,20 +112,23 @@ ANativeWindowBuffer *DisplaySurface::getBuffer(uint8_t **ptr)
     uint8_t *ptrs[3] = {NULL, NULL, NULL};
     ANativeWindowBuffer* buffer;
 
+#if defined(JELLYBEANMR1)
+    if (native_window_dequeue_buffer_and_wait(mWindow, &buffer) < 0 ) {
+#else
     if (mWindow->dequeueBuffer(mWindow, &buffer) < 0 ) {
+#endif
         ARX_PRINT(ARX_ZONE_ERROR, "Failed to dequeue buffer\n");
-        return NULL;
-    }
-    if (mWindow->lockBuffer(mWindow, buffer) < 0 ) {
-        ARX_PRINT(ARX_ZONE_ERROR, "Failed to lock buffer\n");
-        mWindow->cancelBuffer(mWindow, buffer);
         return NULL;
     }
 
     GraphicBufferMapper &mapper = GraphicBufferMapper::get();
     if (mapper.lock(buffer->handle, mUsageFlags, mBounds, (void **)ptrs) < 0) {
         ARX_PRINT(ARX_ZONE_ERROR, "Failed to get surface pointer\n");
+#if defined(JELLYBEANMR1)
+        mWindow->cancelBuffer(mWindow, buffer, -1);
+#else
         mWindow->cancelBuffer(mWindow, buffer);
+#endif
         return NULL;
     }
 
@@ -138,8 +145,11 @@ void DisplaySurface::renderBuffer(ANativeWindowBuffer* buffer)
     if (mapper.unlock(buffer->handle)< 0) {
         ARX_PRINT(ARX_ZONE_WARNING, "Failed to unlock buffer from mapper\n");
     }
-
+#if defined(JELLYBEANMR1)
+    if (mWindow->queueBuffer(mWindow, buffer, -1) < 0) {
+#else
     if (mWindow->queueBuffer(mWindow, buffer) < 0) {
+#endif
         ARX_PRINT(ARX_ZONE_WARNING, "Failed to queue buffer\n");
     }
 }

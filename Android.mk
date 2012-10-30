@@ -22,6 +22,8 @@ ifeq ($(PLAT_MAJOR),4)
         TARGET_ANDROID_VERSION := ICS
     else ifeq  ($(PLAT_MINOR),1)
         TARGET_ANDROID_VERSION := JELLYBEAN
+    else ifeq  ($(PLAT_MINOR),2)
+        TARGET_ANDROID_VERSION := JELLYBEANMR1
     endif
 endif
 
