@@ -63,3 +63,17 @@ endif
 LOCAL_MODULE := libarxpose
 include $(BUILD_SHARED_LIBRARY)
 endif
+
+ifneq (,$(findstring arti,$(VISION_LIBRARIES)))
+include $(CLEAR_VARS)
+LOCAL_MODULE_TAGS := optional
+LOCAL_C_INCLUDES := $(ARX_INC) $(DVP_INC) $(VLIB_INC) $(IMGLIB_INC) $(ARTI_INC)
+LOCAL_CPPFLAGS := $(ARX_DEBUGGING) $(ARX_CPPFLAGS) $(DVP_FEATURES)
+LOCAL_SRC_FILES := ProjectorPoseEngine.cpp
+LOCAL_WHOLE_STATIC_LIBRARIES := libarxengine_base
+LOCAL_STATIC_LIBRARIES := libarti_ARM libvlib_ARM
+LOCAL_SHARED_LIBRARIES := libarxbuf libdvp libutils libcutils libbinder \
+						  libui libgui libion libhardware libdl libOMX_Core
+LOCAL_MODULE := libarxprojpose
+include $(BUILD_SHARED_LIBRARY)
+endif

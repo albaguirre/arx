@@ -66,6 +66,7 @@ CameraPoseEngine::CameraPoseEngine() : ARXEngine()
     m_focus = VCAM_FOCUS_CONTROL_OFF;
     m_focusDepth = 30;
     mCam2ALockDelay = 30;
+    mARTIBuffer = NULL;
 }
 
 CameraPoseEngine::~CameraPoseEngine()
@@ -118,7 +119,14 @@ arxstatus_t CameraPoseEngine::Setup()
         ARX_PRINT(ARX_ZONE_ERROR, "Failed opening LIBARTI handle!");
         return NOMEMORY;
     }
-    AR_initialize(mARHandle, camMgr->width(), camMgr->height(), mARInfo.cameraCalParams);
+    int bufSize = 0;
+    AR_initialize(mARHandle, camMgr->width(), camMgr->height(), mARInfo.cameraCalParams, &bufSize);
+    mARTIBuffer = (short *)malloc(bufSize);
+    if (mARTIBuffer == NULL) {
+        ARX_PRINT(ARX_ZONE_ERROR, "Failed allocating memory for LIBARTI!");
+        return NOMEMORY;
+    }
+    AR_configure(mARHandle, mARTIBuffer);
 
     mARImage.height = h;
     mARImage.width = w;
@@ -312,7 +320,8 @@ arxstatus_t CameraPoseEngine::Process(ImageBuffer *, ImageBuffer *videoBuf)
                 ImageDebug_Close(m_imgdbg, m_numImgDbg);
                 ImageDebug_Open(m_imgdbg, m_numImgDbg);
             }
-            AR_initialize(mARHandle, im.width, im.height, mARInfo.cameraCalParams);
+            int bufSize;
+            AR_initialize(mARHandle, im.width, im.height, mARInfo.cameraCalParams, &bufSize);
             mResetTracking = false;
         }
         if (mUseCPUAlgo) {
@@ -376,6 +385,7 @@ void CameraPoseEngine::Teardown()
 {
     Lock();
     free(mARImage.imageData);
+    free(mARTIBuffer);
     mARImage.imageData = NULL;
 
     if (mARHandle) {

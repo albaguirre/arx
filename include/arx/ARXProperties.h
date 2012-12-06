@@ -65,6 +65,9 @@ enum Properties_e {
      * than the threshold.  The default threshold value is 1.
      */
     PROP_ENGINE_FPD_CONFTHRESH,
+
+    PROP_ENGINE_PROJPOSE_RESET,
+    PROP_ENGINE_PROJPOSE_ZOOM,
 };
 
 /** @see Properties_e */

@@ -92,6 +92,8 @@ enum BufferTypes_e {
      * @see ARXFacialPartsInfo
      */
     BUFF_FACEINFO,
+
+    BUFF_PROJECTOR_POSE,
      /*!
      * End of the Generic buffer ID section
      */
@@ -252,6 +254,13 @@ struct ARXFacialPartsInfo {
 struct ARXCameraPoseMatrix {
     float matrix[12];
     int32_t status;
+};
+
+struct ARXProjectorPose {
+    float view_matrix[16];
+    int32_t status;
+    float pointerX;
+    float pointerY;
 };
 
 }

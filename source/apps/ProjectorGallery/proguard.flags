@@ -1,0 +1,8 @@
+-keep class com.ti.arx.ProjectorGallery.ProjectorPoseRenderer {
+  private void onProjPoseUpdate(int, float, float);
+  private void onARXDeath();
+}
+
+-keepclassmembers class com.ti.arx.ProjectorGallery.ProjectorPoseRenderer {
+  private int context;
+}

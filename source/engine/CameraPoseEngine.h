@@ -54,6 +54,7 @@ private:
     AR_handle mARHandle;
     AR_image mARImage;
     ARTIInfo mARInfo;
+    short *mARTIBuffer;
 
     bool mUseCPUAlgo;
     bool mResetTracking;

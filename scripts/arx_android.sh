@@ -178,6 +178,19 @@ function apps()
 	done
 }
 
+function gallery()
+{
+	adb_remount
+
+	echo Uninstalling com.ti.arx.ProjectorGallery
+	adb -s ${TARGET_DEVICE} uninstall com.ti.arx.ProjectorGallery
+	adb -s ${TARGET_DEVICE} shell "rm -rf /data/data/com.ti.arx.ProjectorGallery"
+
+	echo Installing ProjectorGallery
+	adb -s ${TARGET_DEVICE} shell "rm /system/app/ProjectorGallery.apk"
+	adb -s ${TARGET_DEVICE} install ${ANDROID_PRODUCT_OUT}/system/app/ProjectorGallery.apk
+}
+
 store_function mm
 function mm()
 {
@@ -295,12 +308,12 @@ export CPUS=`cat /proc/cpuinfo | grep processor | wc -l`
 
 export TARGET_PROJ=arx
 export TARGET_ROOT=${MYDROID}/${TI_HW_ROOT}/${TARGET_PROJ}
-export TARGET_LIBS="libarx libarxbuf libarxengine libarxpose"
+export TARGET_LIBS="libarx libarxbuf libarxengine libarxpose libarxprojpose"
 export TARGET_SLIB="libarxdaemon_ipc libarxclient_ipc libarxjni_util libarxengine_base"
 export TARGET_BINS="arxd"
 export TARGET_TEST="arx_test arxd_test"
-export TARGET_APPS="ARCowboid ARXStreams"
-export TARGET_PKGS="com.ti.arx.ARCowboid com.ti.arx.ARXStreams"
+export TARGET_APPS="ARCowboid ARXStreams ProjectorGallery"
+export TARGET_PKGS="com.ti.arx.ARCowboid com.ti.arx.ARXStreams com.ti.arx.ProjectorGallery"
 
 while [ $# -gt 0 ];
 do
