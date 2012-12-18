@@ -17,7 +17,7 @@
 #include <jni.h>
 #include <arx/ARXJniUtil.h>
 
-#if defined(JELLYBEAN)
+#if defined(JELLYBEAN) || defined(JELLYBEANMR1)
 #include <gui/ISurface.h>
 #include <gui/Surface.h>
 #else
@@ -40,7 +40,7 @@ android::ISurfaceTexture* get_surfaceTexture(JNIEnv *env, jobject, jobject jSurf
     jclass surface = env->FindClass("android/graphics/SurfaceTexture");
     jfieldID jniID = env->GetFieldID(surface, ANDROID_GRAPHICS_SURFACETEXTURE_JNI_ID, "I");
     SurfaceTexture* surfTex = reinterpret_cast<SurfaceTexture*>(env->GetIntField(jSurfaceTexture, jniID));
-#if defined(JELLYBEAN)
+#if defined(JELLYBEAN) || defined(JELLYBEANMR1)
     sp<ISurfaceTexture> surfaceTexture = surfTex->getBufferQueue();
 #else
     sp<ISurfaceTexture> surfaceTexture = interface_cast<ISurfaceTexture>(surfTex->asBinder());

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#if defined(JELLYBEAN)
+#if defined(JELLYBEAN) || defined(JELLYBEANMR1)
 #include <gui/SurfaceComposerClient.h>
 #else
 #include <surfaceflinger/SurfaceComposerClient.h>

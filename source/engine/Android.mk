@@ -36,7 +36,12 @@ LOCAL_SRC_FILES += FacePose.cpp
 LOCAL_WHOLE_STATIC_LIBRARIES += libeOkaoDt libeOkaoPt libeOkaoCo
 endif
 LOCAL_SHARED_LIBRARIES := libarxbuf libdvp libutils libcutils libbinder \
-						  libui libgui libion libhardware libdl libOMX_Core 
+                          libui libgui libhardware libdl libOMX_Core
+ifeq ($(TARGET_ANDROID_VERSION),JELLYBEANMR1)
+    LOCAL_SHARED_LIBRARIES += libion_ti
+else
+    LOCAL_SHARED_LIBRARIES += libion
+endif
 LOCAL_MODULE := libarxengine
 include $(BUILD_SHARED_LIBRARY)
 
@@ -49,7 +54,12 @@ LOCAL_SRC_FILES := CameraPoseEngine.cpp
 LOCAL_WHOLE_STATIC_LIBRARIES := libarxengine_base
 LOCAL_STATIC_LIBRARIES := libarti_ARM libvlib_ARM
 LOCAL_SHARED_LIBRARIES := libarxbuf libdvp libutils libcutils libbinder \
-						  libui libgui libion libhardware libdl libOMX_Core
+                          libui libgui libhardware libdl libOMX_Core
+ifeq ($(TARGET_ANDROID_VERSION),JELLYBEANMR1)
+    LOCAL_SHARED_LIBRARIES += libion_ti
+else
+    LOCAL_SHARED_LIBRARIES += libion
+endif
 LOCAL_MODULE := libarxpose
 include $(BUILD_SHARED_LIBRARY)
 endif
